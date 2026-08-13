@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Selamat Ulang Tahun! 🎂🎉</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', 'Chalkboard SE', 'Poppins', cursive, sans-serif;
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #a1c4fd 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-x: hidden;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.92);
+            border-radius: 24px;
+            padding: 25px 20px;
+            max-width: 480px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+            border: 4px solid #fff;
+            position: relative;
+            z-index: 10;
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            color: #ff4757;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px #ffeaa7;
+        }
+
+        p {
+            font-size: 1rem;
+            line-height: 1.5;
+            color: #555;
+            margin-bottom: 15px;
+        }
+
+        .btn {
+            background: linear-gradient(45deg, #ff4757, #ff6b81);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 6px 15px rgba(255, 71, 87, 0.4);
+            transition: all 0.2s ease;
+            margin: 8px 4px;
+            display: inline-block;
+        }
+
+        .btn:active {
+            transform: scale(0.95);
+            box-shadow: 0 2px 8px rgba(255, 71, 87, 0.4);
+        }
+
+        .btn-yellow {
+            background: linear-gradient(45deg, #ffa502, #eccc68);
+            box-shadow: 0 6px 15px rgba(255, 165, 2, 0.4);
+        }
+
+        .btn-green {
+            background: linear-gradient(45deg, #2ed573, #7bed9f);
+            box-shadow: 0 6px 15px rgba(46, 213, 115, 0.4);
+            color: #1e3799;
+        }
+
+        .stage {
+            display: none;
+            animation: fadeIn 0.5s ease-in-out forwards;
+        }
+
+        .stage.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Stage 1: Game */
+        .game-area {
+            position: relative;
+            width: 100%;
+            height: 260px;
+            background: #ffeaa7;
+            border-radius: 16px;
+            border: 3px dashed #fdcb6e;
+            overflow: hidden;
+            margin: 15px 0;
+            cursor: pointer;
+        }
+
+        .balloon {
+            position: absolute;
+            font-size: 2.5rem;
+            cursor: pointer;
+            transition: transform 0.1s;
+            animation: floatUp 3s linear infinite;
+        }
+
+        @keyframes floatUp {
+            0% { transform: translateY(260px) rotate(0deg); }
+            100% { transform: translateY(-60px) rotate(20deg); }
+        }
+
+        .score-board {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #2f3542;
+            margin-bottom: 5px;
+        }
+
+        /* Stage 2 & 3: Wishes */
+        .card-box {
+            background: #f1f2f6;
+            border-radius: 16px;
+            padding: 15px;
+            margin: 15px 0;
+            border: 2px solid #dfe4ea;
+            font-size: 1.05rem;
+            color: #2f3542;
+            min-height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .funny-img {
+            font-size: 4rem;
+            margin: 10px 0;
+            animation: bounce 1s infinite alternate;
+        }
+
+        @keyframes bounce {
+            from { transform: translateY(0); }
+            to { transform: translateY(-12px); }
+        }
+
+        canvas#confetti {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        .sound-badge {
+            font-size: 0.8rem;
+            background: #eccc68;
+            padding: 3px 8px;
+            border-radius: 10px;
+            color: #fff;
+            margin-left: 5px;
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="confetti"></canvas>
+
+    <div class="container">
+
+        <!-- TAHAP 1: GAME MULA-MULA -->
+        <div id="stage1" class="stage active">
+            <h1>🎈 Misi Khusus Ultah! 🎈</h1>
+            <p>Pecahkan <b>5 Balon Ultah</b> untuk membuka pesan rahasia yang super spesial!</p>
+            
+            <div class="score-board">
+                Balon Terpecah: <span id="score" style="color: #ff4757; font-size: 1.5rem;">0</span> / 5
+            </div>
+
+            <div class="game-area" id="gameArea">
+                <!-- Balon muncul via JS -->
+            </div>
+            
+            <p style="font-size: 0.85rem; color: #888;">*Klik balonnya sebelum terbang ke atas!</p>
+        </div>
+
+        <!-- TAHAP 2: UCAPAN LUCU -->
+        <div id="stage2" class="stage">
+            <h1>🎉 YAY! BERHASIL! 🎉</h1>
+            <div class="funny-img" id="funnyEmoji">🤪</div>
+            
+            <div class="card-box" id="wishCard">
+                Klik tombol di bawah buat dengerin & baca ucapan spesial buat kamu! 👇
+            </div>
+
+            <div style="margin-top: 10px;">
+                <button class="btn btn-yellow" onclick="playSpeech(1)">🤪 Doa Muka Kontak</button>
+                <button class="btn btn-yellow" onclick="playSpeech(2)">💸 Doa Tangan Ajaib</button>
+                <button class="btn btn-yellow" onclick="playSpeech(3)">🎂 Doa Tambah Umur</button>
+            </div>
+
+            <br>
+            <button class="btn btn-green" onclick="goToStage(3)" style="margin-top: 15px;">
+                Lanjut ke Pesta Musik! 🎶 ➡️
+            </button>
+        </div>
+
+        <!-- TAHAP 3: LAGU ULTAH & KONFETI -->
+        <div id="stage3" class="stage">
+            <h1>🥳 HAPPY BIRTHDAY! 🎂</h1>
+            <p>Selamat tambah tua, tambah bijak (atau tambah kocak)! 😂</p>
+
+            <div class="funny-img">🎂🎁🎈</div>
+
+            <p style="font-weight: bold; color: #ff4757;">Tekan tombol buat putar Lagu Ultah Synthesizer!</p>
+            
+            <button class="btn" id="musicBtn" onclick="toggleBirthdaySong()">
+                ▶️ Putar Lagu Ulang Tahun 🎉
+            </button>
+            <button class="btn btn-yellow" onclick="triggerConfettiBurst()">
+                🎊 Lempar Konfeti Lagi!
+            </button>
+
+            <br><br>
+            <button class="btn btn-green" onclick="goToStage(1); resetGame();">
+                🔄 Main Lagi dari Awal
+            </button>
+        </div>
+
+    </div>
+
+    <script>
+        // --- AUDIO SYNTHESIZER (Web Audio API) ---
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        let audioCtx = null;
+
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new AudioContext();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+        }
+
+        // Sound Effects
+        function playPopSound() {
+            initAudio();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(400, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(800, audioCtx.currentTime + 0.08);
+            
+            gain.gain.setValueAtTime(0.5, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.08);
+            
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.08);
+        }
+
+        function playBoingSound() {
+            initAudio();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(150, audioCtx.currentTime);
+            osc.frequency.linearRampToValueAtTime(400, audioCtx.currentTime + 0.25);
+            
+            gain.gain.setValueAtTime(0.4, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.25);
+            
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.25);
+        }
+
+        function playWinSound() {
+            initAudio();
+            const notes = [261.63, 329.63, 392.00, 523.25]; // C E G C
+            notes.forEach((freq, idx) => {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'sine';
+                osc.frequency.value = freq;
+                gain.gain.setValueAtTime(0.3, audioCtx.currentTime + idx * 0.1);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + idx * 0.1 + 0.2);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start(audioCtx.currentTime + idx * 0.1);
+                osc.stop(audioCtx.currentTime + idx * 0.1 + 0.2);
+            });
+        }
+
+        // --- GAME LOGIC ---
+        let score = 0;
+        const targetScore = 5;
+        const gameArea = document.getElementById('gameArea');
+        const scoreElem = document.getElementById('score');
+        const balloonEmojis = ['🎈', '🎁', '🎂', '🥳', '🎉'];
+
+        function spawnBalloon() {
+            if (score >= targetScore) return;
+
+            const balloon = document.createElement('div');
+            balloon.className = 'balloon';
+            balloon.innerText = balloonEmojis[Math.floor(Math.random() * balloonEmojis.length)];
+            
+            const leftPos = Math.random() * (gameArea.clientWidth - 40);
+            balloon.style.left = leftPos + 'px';
+            
+            // Speed variability
+            const duration = 2.5 + Math.random() * 1.5;
+            balloon.style.animationDuration = duration + 's';
+
+            balloon.onclick = (e) => {
+                e.stopPropagation();
+                playPopSound();
+                score++;
+                scoreElem.innerText = score;
+                balloon.remove();
+
+                if (score >= targetScore) {
+                    playWinSound();
+                    setTimeout(() => {
+                        alert("🎉 Hore! Kamu berhasil memecahkan balonnya!");
+                        goToStage(2);
+                    }, 300);
+                }
+            };
+
+            gameArea.appendChild(balloon);
+
+            setTimeout(() => {
+                if (balloon.parentNode) {
+                    balloon.remove();
+                }
+            }, duration * 1000);
+        }
+
+        let gameInterval = setInterval(spawnBalloon, 800);
+
+        function resetGame() {
+            score = 0;
+            scoreElem.innerText = score;
+            gameArea.innerHTML = '';
+            clearInterval(gameInterval);
+            gameInterval = setInterval(spawnBalloon, 800);
+        }
+
+        // --- STAGE SWITCHING ---
+        function goToStage(stageNum) {
+            document.querySelectorAll('.stage').forEach(el => el.classList.remove('active'));
+            document.getElementById('stage' + stageNum).classList.add('active');
+            
+            if (stageNum === 3) {
+                triggerConfettiBurst();
+            }
+        }
+
+        // --- SPEECH & FUNNY WISHES ---
+        const wishes = {
+            1: {
+                text: "“Selamat ulang tahun ya! Semoga mukamu tetep glowing, dompet tetep tebel, dan beban hidup nggak bikin rambut cepet beruban! 😂”",
+                emoji: "🤪"
+            },
+            2: {
+                text: "“Met ultah brader! Semoga di umur baru ini kalo pengen barang tinggal 'simsalabim' langsung dibayar orang lain! 💸✨”",
+                emoji: "🤑"
+            },
+            3: {
+                text: "“Selamat nambah umur! Ingat, tua itu pasti, tapi dewasa itu opsi. Jadi teteplah konyol bersamaku! 🥳🎂”",
+                emoji: "🤡"
+            }
+        };
+
+        function playSpeech(id) {
+            playBoingSound();
+            const wish = wishes[id];
+            document.getElementById('wishCard').innerText = wish.text;
+            document.getElementById('funnyEmoji').innerText = wish.emoji;
+
+            // Browser Speech Synthesis
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel(); // Stop current speech
+                const utterance = new SpeechSynthesisUtterance(wish.text.replace(/[^a-zA-Z0-9 ,.!]/g, ""));
+                utterance.lang = 'id-ID';
+                utterance.pitch = 1.4; // Pitch tinggi bikin lucu
+                utterance.rate = 1.1;
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+
+        // --- HAPPY BIRTHDAY TUNE SYNTHESIZER ---
+        let isPlayingSong = false;
+        let songTimeouts = [];
+
+        // Melody notes & durations (Happy Birthday)
+        const birthdayMelody = [
+            { note: 264, duration: 0.35 }, // G4
+            { note: 264, duration: 0.2 },  // G4
+            { note: 297, duration: 0.5 },  // A4
+            { note: 264, duration: 0.5 },  // G4
+            { note: 352, duration: 0.5 },  // C5
+            { note: 330, duration: 0.9 },  // B4
+
+            { note: 264, duration: 0.35 }, // G4
+            { note: 264, duration: 0.2 },  // G4
+            { note: 297, duration: 0.5 },  // A4
+            { note: 264, duration: 0.5 },  // G4
+            { note: 396, duration: 0.5 },  // D5
+            { note: 352, duration: 0.9 },  // C5
+
+            { note: 264, duration: 0.35 }, // G4
+            { note: 264, duration: 0.2 },  // G4
+            { note: 528, duration: 0.5 },  // G5
+            { note: 440, duration: 0.5 },  // E5
+            { note: 352, duration: 0.5 },  // C5
+            { note: 330, duration: 0.5 },  // B4
+            { note: 297, duration: 0.8 },  // A4
+
+            { note: 470, duration: 0.35 }, // F5
+            { note: 470, duration: 0.2 },  // F5
+            { note: 440, duration: 0.5 },  // E5
+            { note: 352, duration: 0.5 },  // C5
+            { note: 396, duration: 0.5 },  // D5
+            { note: 352, duration: 1.1 }   // C5
+        ];
+
+        function playNote(freq, duration, startTime) {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+
+            osc.type = 'sine'; // Sound retro cute
+            osc.frequency.setValueAtTime(freq, startTime);
+
+            gain.gain.setValueAtTime(0.3, startTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, startTime + duration - 0.05);
+
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            osc.start(startTime);
+            osc.stop(startTime + duration);
+        }
+
+        function toggleBirthdaySong() {
+            initAudio();
+            const btn = document.getElementById('musicBtn');
+
+            if (isPlayingSong) {
+                stopBirthdaySong();
+                btn.innerText = "▶️ Putar Lagu Ulang Tahun 🎉";
+                btn.classList.remove('btn-yellow');
+            } else {
+                isPlayingSong = true;
+                btn.innerText = "⏹️ Hentikan Musik 🎶";
+                btn.classList.add('btn-yellow');
+
+                let currTime = audioCtx.currentTime + 0.1;
+                birthdayMelody.forEach((item) => {
+                    playNote(item.note, item.duration, currTime);
+                    currTime += item.duration + 0.05;
+                });
+
+                const totalDuration = (currTime - audioCtx.currentTime) * 1000;
+                const timer = setTimeout(() => {
+                    isPlayingSong = false;
+                    btn.innerText = "▶️ Putar Lagu Ulang Tahun 🎉";
+                    btn.classList.remove('btn-yellow');
+                }, totalDuration);
+
+                songTimeouts.push(timer);
+            }
+        }
+
+        function stopBirthdaySong() {
+            isPlayingSong = false;
+            songTimeouts.forEach(clearTimeout);
+            songTimeouts = [];
+        }
+
+        // --- CANVAS CONFETTI EFFECT ---
+        const canvas = document.getElementById('confetti');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        function triggerConfettiBurst() {
+            const colors = ['#ff4757', '#ffa502', '#2ed573', '#1e90ff', '#3742fa', '#ed4245'];
+            for (let i = 0; i < 80; i++) {
+                particles.push({
+                    x: canvas.width / 2,
+                    y: canvas.height / 2,
+                    vx: (Math.random() - 0.5) * 12,
+                    vy: (Math.random() - 0.7) * 14,
+                    size: Math.random() * 8 + 4,
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    tilt: Math.random() * 10,
+                    tiltAngle: 0,
+                    tiltAngleIncremental: Math.random() * 0.1 + 0.05
+                });
+            }
+        }
+
+        function drawConfetti() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            particles.forEach((p, index) => {
+                p.x += p.vx;
+                p.y += p.vy;
+                p.vy += 0.2; // Gravity
+                p.tiltAngle += p.tiltAngleIncremental;
+                p.tilt = Math.sin(p.tiltAngle) * 15;
+
+                ctx.beginPath();
+                ctx.lineWidth = p.size;
+                ctx.strokeStyle = p.color;
+                ctx.moveTo(p.x + p.tilt + p.size / 2, p.y);
+                ctx.lineTo(p.x + p.tilt, p.y + p.tilt + p.size / 2);
+                ctx.stroke();
+
+                if (p.y > canvas.height) {
+                    particles.splice(index, 1);
+                }
+            });
+
+            requestAnimationFrame(drawConfetti);
+        }
+        drawConfetti();
+    </script>
+</body>
+</html>
